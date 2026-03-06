@@ -3,7 +3,7 @@ Começamos fazendo o front-end e a estruturação do código
 
 # Marketplace de Máquinas Pesadas
 
-Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesadas e operadores, facilitando a contratação de serviços de terraplanagem, obras civis e infraestrutura.
+Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesadas e operadores, facilitando a contratação de serviços de terraplanagem, obras civis e infraestrutura. O objetivo do projeto é facilitar a locação de máquinas pesadas.
 
 ## Tecnologias 
 
