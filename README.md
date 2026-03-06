@@ -5,7 +5,7 @@ Começamos fazendo o front-end e a estruturação do código
 
 Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesadas e operadores, facilitando a contratação de serviços de terraplanagem, obras civis e infraestrutura.
 
-## 🚀 Tecnologias 
+## Tecnologias 
 
 - **Next.js 14** - Framework React com App Router
 - **TypeScript** - Tipagem estática
@@ -13,7 +13,7 @@ Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesada
 - **Lucide React** - Ícones
 - **React Icons** - Biblioteca de ícones adicional
 
-### 🔄 A Implementar (Backend)
+### A Implementar (Backend)
 
 - [ ] Autenticação e autorização
 - [ ] Integração com gateway de pagamento
@@ -21,7 +21,7 @@ Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesada
 - [ ] Sistema de mensagens
 - [ ] Dashboard dos perfis
 
-## 🏗️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 marketplace-maquinas-pesadas/
@@ -47,7 +47,7 @@ marketplace-maquinas-pesadas/
 └── README.md
 ```
 
-## 🎯 Perfis da Plataforma
+##  Perfis da Plataforma
 
 ### Cliente
 - Solicita serviços de máquinas pesadas
@@ -64,14 +64,12 @@ marketplace-maquinas-pesadas/
 - Define valores por hora
 - Gerencia histórico de trabalhos
 
-## 🚀 Como Executar
-
 ### Pré-requisitos
 
 - Node.js 18+ instalado
 - npm ou yarn
 
-### Instalação
+###  Como Executar
 npm install -g npm
 ```bash
 # Instalar dependências
@@ -89,7 +87,7 @@ npm start
 
 O aplicativo estará disponível em `http://localhost:3000`
 
-## 📱 Funcionalidades Principais desejadas
+## Funcionalidades Principais desejadas
 
 ### Busca Inteligente
 - Busca por tipo de máquina
