@@ -1,15 +1,11 @@
+*Este projeto está em fase de desenvolvimento. 
+Começamos fazendo o front-end e a estruturação do código
+
 # Marketplace de Máquinas Pesadas
 
 Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesadas e operadores, facilitando a contratação de serviços de terraplanagem, obras civis e infraestrutura.
 
-## 🎨 Design
-
-O aplicativo utiliza as cores:
-- **Azul Marinho** (#001f5c) - Cor principal
-- **Amarelo** (#ffe53d) - Cor de destaque e CTAs
-- **Branco** - Cor de fundo e contraste
-
-## 🚀 Tecnologias
+## 🚀 Tecnologias 
 
 - **Next.js 14** - Framework React com App Router
 - **TypeScript** - Tipagem estática
@@ -17,29 +13,13 @@ O aplicativo utiliza as cores:
 - **Lucide React** - Ícones
 - **React Icons** - Biblioteca de ícones adicional
 
-## 📋 Funcionalidades do MVP
-
-### ✅ Implementadas
-
-- [x] Página inicial com busca e apresentação
-- [x] Sistema de cadastro com 3 perfis (Cliente, Dono, Operador)
-- [x] Página de busca de máquinas
-- [x] Página de detalhes da máquina
-- [x] Sistema de chat entre usuários
-- [x] Página de pagamento (Pix e Cartão)
-- [x] Perfil do usuário com abas
-- [x] Sistema de avaliações
-- [x] Páginas informativas (Como Funciona, Sobre)
-
 ### 🔄 A Implementar (Backend)
 
 - [ ] Autenticação e autorização
-- [ ] Integração com API de geolocalização
-- [ ] Sistema de notificações
 - [ ] Integração com gateway de pagamento
 - [ ] Upload de imagens
-- [ ] Sistema de mensagens em tempo real
-- [ ] Dashboard administrativo
+- [ ] Sistema de mensagens
+- [ ] Dashboard dos perfis
 
 ## 🏗️ Estrutura do Projeto
 
@@ -109,7 +89,7 @@ npm start
 
 O aplicativo estará disponível em `http://localhost:3000`
 
-## 📱 Funcionalidades Principais
+## 📱 Funcionalidades Principais desejadas
 
 ### Busca Inteligente
 - Busca por tipo de máquina
@@ -129,44 +109,4 @@ O aplicativo estará disponível em `http://localhost:3000`
 - Sistema de estrelas (1-5)
 - Comentários e recomendações
 - Histórico de avaliações
-
-## 🔒 Segurança
-
-- Validação de formulários
-- Proteção de rotas (a implementar)
-- Dados sensíveis criptografados (a implementar)
-- Verificação de documentos (a implementar)
-
-## 📈 Próximos Passos
-
-1. **Backend**
-   - API REST com Node.js/Express ou Next.js API Routes
-   - Banco de dados (PostgreSQL ou MongoDB)
-   - Autenticação JWT
-   - Upload de arquivos (Cloudinary ou AWS S3)
-
-2. **Integrações**
-   - Gateway de pagamento (Stripe, Mercado Pago)
-   - API de geolocalização (Google Maps)
-   - Serviço de notificações push
-   - Sistema de mensagens em tempo real (Socket.io)
-
-3. **Melhorias**
-   - Dashboard administrativo
-   - Relatórios e analytics
-   - App mobile (React Native)
-   - Sistema de notificações por email
-
-## 📄 Licença
-
-Este projeto é um MVP desenvolvido para demonstração das funcionalidades principais.
-
-## 👥 Contribuição
-
-Este é um projeto de demonstração. Para contribuições, entre em contato.
-
----
-
-Desenvolvido com ❤️ para transformar o setor de máquinas pesadas
-
 
