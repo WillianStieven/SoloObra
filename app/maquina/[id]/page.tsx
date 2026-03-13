@@ -4,12 +4,15 @@ import { useState } from 'react'
 import { MapPin, User, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { MAQUINAS_EXEMPLO } from '@/lib/dados'
-import { CampoEntrada, Botao, Card, Avaliacao } from '@/components/ComponentesUI'
+import { Botao, Card, Avaliacao } from '@/components/ComponentesUI'
 
 export default function PaginaDetalhesMaquina({ params }: { params: { id: string } }) {
   const idMaquina = parseInt(params.id)
   const [dataSelecionada, setDataSelecionada] = useState('')
   const [horas, setHoras] = useState(1)
+
+  // BLOQUEIO DE DATA: Pega a data de hoje no formato YYYY-MM-DD
+  const dataMinima = new Date().toISOString().split('T')[0]
 
   const maquina = MAQUINAS_EXEMPLO.find((m) => m.id === idMaquina) || MAQUINAS_EXEMPLO[0]
 
@@ -21,123 +24,136 @@ export default function PaginaDetalhesMaquina({ params }: { params: { id: string
     <div className="pagina">
       <div className="conteudo-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* LADO ESQUERDO: Detalhes da Máquina */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="overflow-hidden">
-              <div className="hero-sm p-12 text-center">
+              <div className="hero-sm p-12 text-center bg-navy-900 text-white rounded-t-lg">
                 <div className="text-8xl mb-4">{maquina.imagem}</div>
-                <h1 className="text-3xl font-bold text-white mb-2">{maquina.nome}</h1>
-                <div className="flex items-center justify-center gap-2 text-white">
-                  <Avaliacao nota={maquina.avaliacao} totalAvaliacoes={maquina.totalAvaliacoes} tamanho="medio" />
-                </div>
+                <h1 className="text-3xl font-bold mb-2">{maquina.nome}</h1>
+                <p className="text-lg opacity-80">{maquina.descricao || 'Excelente equipamento para sua obra.'}</p>
               </div>
-              <div className="p-6">
-                {maquina.descricao && (
-                  <>
-                    <h2 className="titulo-sec mb-4">Descrição</h2>
-                    <p className="texto mb-6">{maquina.descricao}</p>
-                  </>
-                )}
+              
+              <div className="p-8">
+                <div className="flex-between mb-6">
+                  <Avaliacao nota={maquina.avaliacao} totalAvaliacoes={maquina.totalAvaliacoes} />
+                  <span className={maquina.disponivel ? "badge-disponivel" : "badge-aviso"}>
+                    {maquina.disponivel ? 'Disponível' : 'Indisponível'}
+                  </span>
+                </div>
 
-                {maquina.especificacoes && maquina.especificacoes.length > 0 && (
-                  <>
-                    <h2 className="titulo-sec mb-4">Especificações Técnicas</h2>
-                    <ul className="grid grid-cols-2 gap-2 mb-6">
-                      {maquina.especificacoes.map((especificacao, indice) => (
-                        <li key={indice} className="flex-gap texto">
-                          <span className="icone-ponto"></span>
-                          {especificacao}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="flex items-center gap-3 texto">
+                    <div className="bg-gray-100 p-3 rounded-full">
+                      <User className="w-6 h-6 text-navy-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Proprietário</p>
+                      <p className="font-semibold text-navy-900">{maquina.proprietario}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 texto">
+                    <div className="bg-gray-100 p-3 rounded-full">
+                      <MapPin className="w-6 h-6 text-navy-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Localização</p>
+                      <p className="font-semibold text-navy-900">{maquina.localizacao}</p>
+                    </div>
+                  </div>
+                </div>
 
-                {maquina.recursos && maquina.recursos.length > 0 && (
-                  <>
-                    <h2 className="titulo-sec mb-4">Recursos Inclusos</h2>
+                {maquina.especificacoes && (
+                  <div className="mb-6">
+                    <h3 className="titulo-sec mb-4">Especificações</h3>
                     <ul className="grid grid-cols-2 gap-2">
-                      {maquina.recursos.map((recurso, indice) => (
-                        <li key={indice} className="flex-gap texto">
-                          <span className="icone-ponto"></span>
-                          {recurso}
+                      {maquina.especificacoes.map((esp, i) => (
+                        <li key={i} className="flex items-center gap-2 texto-sm">
+                          <span className="text-yellow-500">•</span> {esp}
                         </li>
                       ))}
                     </ul>
-                  </>
+                  </div>
                 )}
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h2 className="titulo-sec mb-4">Sobre o Proprietário</h2>
-              <div className="flex-gap-6">
-                <div className="avatar-sm">
-                  <User className="w-8 h-8 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-navy-900 mb-1">{maquina.proprietario}</h3>
-                  <div className="flex-gap texto mb-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{maquina.localizacao} • {maquina.distancia}</span>
-                  </div>
-                  <div className="mb-4">
-                    <Avaliacao nota={maquina.avaliacao} totalAvaliacoes={maquina.totalAvaliacoes} tamanho="pequeno" />
-                  </div>
-                  <Link href="/chat" className="inline-flex items-center gap-2 btn-amarelo-sm"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Enviar Mensagem
-                  </Link>
-                </div>
               </div>
             </Card>
           </div>
 
-          <div className="lg:col-span-1">
+          {/* LADO DIREITO: Card de Reserva */}
+          <div>
             <Card className="p-6 sticky top-24">
-              <h2 className="titulo-2xl mb-6">Contratar Serviço</h2>
-
+              <h2 className="titulo-sec mb-6">Fazer Reserva</h2>
+              
               <div className="space-y-4 mb-6">
-                <CampoEntrada
-                  rotulo="Data do Serviço"
-                  type="date"
-                  value={dataSelecionada}
-                  onChange={(e) => setDataSelecionada(e.target.value)}
-                />
-
-                <CampoEntrada
-                  rotulo="Quantidade de Horas"
-                  type="number"
-                  min="1"
-                  value={horas.toString()}
-                  onChange={(e) => setHoras(Number(e.target.value))}
-                />
+                <div>
+                  <label className="block texto-sm font-semibold mb-2">Data da Reserva</label>
+                  <input
+                    type="date"
+                    min={dataMinima}
+                    value={dataSelecionada}
+                    onChange={(e) => setDataSelecionada(e.target.value)}
+                    className="w-full select-campo"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block texto-sm font-semibold mb-2">Horas Necessárias</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="24"
+                    value={horas}
+                    onChange={(e) => setHoras(parseInt(e.target.value) || 1)}
+                    className="w-full select-campo"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="divisor mb-6">
-                <div className="linha mb-2">
+              <div className="bloco-cinza mb-6 p-4 rounded-lg">
+                <div className="flex justify-between mb-2">
                   <span className="texto">Preço por hora</span>
                   <span className="font-semibold text-navy-900">R$ {maquina.preco.toFixed(2)}</span>
                 </div>
-                <div className="linha mb-2">
+                <div className="flex justify-between mb-2">
                   <span className="texto">Quantidade de horas</span>
                   <span className="font-semibold text-navy-900">{horas}</span>
                 </div>
-                <div className="linha mb-2">
+                <div className="flex justify-between mb-2">
                   <span className="texto">Taxa da plataforma (10%)</span>
                   <span className="font-semibold text-navy-900">R$ {taxaPlataforma.toFixed(2)}</span>
                 </div>
-                <div className="divisor pt-2 linha-total">
+                <div className="flex justify-between pt-2 border-t border-gray-300 mt-2">
                   <span className="text-lg font-bold text-navy-900">Total</span>
                   <span className="text-lg font-bold text-navy-900">R$ {totalFinal.toFixed(2)}</span>
                 </div>
               </div>
 
-              <Link
-                href={`/pagamento?maquina=${maquina.id}&horas=${horas}&data=${dataSelecionada}`}
-                className="block w-full"
-              >
-                <Botao larguraCompleta>Continuar para Pagamento</Botao>
+              {/* LÓGICA DO BOTÃO DE PAGAMENTO BLOQUEADO */}
+              {!dataSelecionada ? (
+                <div className="text-center mb-4">
+                  <Botao larguraCompleta disabled className="opacity-50 cursor-not-allowed">
+                    Selecione uma data para continuar
+                  </Botao>
+                  <p className="text-xs text-red-500 mt-2">
+                    * Escolha a data da reserva para verificar a disponibilidade
+                  </p>
+                </div>
+              ) : (
+                <Link
+                  href={`/pagamento?maquina=${maquina.id}&horas=${horas}&data=${dataSelecionada}`}
+                  className="block w-full mb-4"
+                >
+                  <Botao larguraCompleta>Continuar para Pagamento</Botao>
+                </Link>
+              )}
+
+              {/* BOTÃO DO CHAT ADICIONADO AQUI */}
+              <Link href="/chat" className="block w-full">
+                <Botao variante="contorno" larguraCompleta className="flex justify-center items-center gap-2">
+                  <MessageCircle className="w-5 h-5" />
+                  Falar com o Proprietário
+                </Botao>
               </Link>
 
               <p className="text-xs text-gray-500 text-center mt-4">
@@ -145,6 +161,7 @@ export default function PaginaDetalhesMaquina({ params }: { params: { id: string
               </p>
             </Card>
           </div>
+          
         </div>
       </div>
     </div>
