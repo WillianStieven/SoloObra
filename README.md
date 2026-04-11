@@ -54,11 +54,6 @@ marketplace-maquinas-pesadas/
 - Busca por tipo de máquina e localização
 - Acompanha execução e avalia serviços
 
-### Dono de Máquina
-- Cadastra equipamentos
-- Define preços e disponibilidade
-- Gerencia contratos e recebimentos
-
 ### Operador
 - Cadastra habilidades e documentos
 - Define valores por hora
