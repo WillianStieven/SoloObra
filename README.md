@@ -8,7 +8,6 @@ Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesada
 ## Tecnologias 
 
 - **Next.js 14** - Framework React com App Router
-- **TypeScript** - Tipagem estática
 - **Tailwind CSS** - Estilização
 - **Lucide React** - Ícones
 - **React Icons** - Biblioteca de ícones adicional
