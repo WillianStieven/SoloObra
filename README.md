@@ -8,6 +8,7 @@ Uma plataforma digital inovadora que conecta clientes, donos de máquinas pesada
 ## Tecnologias 
 
 - **Next.js 14** - Framework React com App Router
+- **TypeScript** - Tipagem estática
 - **Tailwind CSS** - Estilização
 - **Lucide React** - Ícones
 - **React Icons** - Biblioteca de ícones adicional
@@ -52,6 +53,11 @@ marketplace-maquinas-pesadas/
 - Solicita serviços de máquinas pesadas
 - Busca por tipo de máquina e localização
 - Acompanha execução e avalia serviços
+
+### Dono de Máquina
+- Cadastra equipamentos
+- Define preços e disponibilidade
+- Gerencia contratos e recebimentos
 
 ### Operador
 - Cadastra habilidades e documentos

@@ -1,18 +1,15 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { User, Truck, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { CampoEntrada, Botao, Card } from '../../components/ComponentesUI'
 
-/**
- * Configuração dos tipos de usuário disponíveis
- * Define ícone, título e descrição para cada tipo
- */
+
 const CONFIG_TIPO_USUARIO = {
-  cliente: { icone: User, titulo: 'Cliente', descricao: 'Preciso contratar máquinas para minhas obras' },
-  dono: { icone: Truck, titulo: 'Dono de Máquina', descricao: 'Tenho máquinas pesadas e quero disponibilizá-las na plataforma' },
+  Cliente: { icone: User, titulo: 'Cliente', descricao: 'Preciso contratar máquinas para minhas obras' },
+  Dono: { icone: Truck, titulo: 'Dono de Máquina', descricao: 'Tenho máquinas pesadas e quero disponibilizá-las na plataforma' },
 }
 
 /**
@@ -21,9 +18,10 @@ const CONFIG_TIPO_USUARIO = {
  */
 function ConteudoCadastro() {
   const searchParams = useSearchParams()
-  // Estado para armazenar o tipo de usuário selecionado (null se ainda não selecionou)
+  const router = useRouter()
+ 
   const [tipoUsuario, setTipoUsuario] = useState(null)
-  // Estado para armazenar todos os dados do formulário de cadastro
+
   const [dadosFormulario, setDadosFormulario] = useState({
     nome: '',
     email: '',
@@ -36,34 +34,62 @@ function ConteudoCadastro() {
     cidade: '',
     estado: '',
   })
+  const [mensagemErro, setMensagemErro] = useState('')
+  const [carregando, setCarregando] = useState(false)
 
-  /**
-   * Effect que verifica se há um tipo de usuário na URL
-   * Se houver e for válido, define o tipo de usuário automaticamente
-   * Isso permite links diretos como /cadastro?tipo=cliente
-   */
   useEffect(() => {
     const tipo = searchParams.get('tipo')
-    if (tipo && ['cliente', 'dono'].includes(tipo)) {
+    if (tipo && ['Cliente', 'Dono'].includes(tipo)) {
       setTipoUsuario(tipo)
     }
   }, [searchParams])
 
-  /**
-   * Função executada ao enviar o formulário de cadastro
-   * Previne o comportamento padrão e processa o cadastro
-   * Em produção, enviaria os dados para uma API
-   */
-  const aoEnviar = (e) => {
+
+  const aoEnviar = async (e) => {
     e.preventDefault()
-    console.log('Cadastro:', { tipoUsuario, dadosFormulario })
-    alert('Cadastro realizado com sucesso!')
+    setMensagemErro('')
+
+    if (dadosFormulario.senha !== dadosFormulario.confirmarSenha) {
+      setMensagemErro('As senhas não correspondem.')
+      return
+    }
+
+    const payload = {
+      tipo: tipoUsuario,
+      nome: dadosFormulario.nome,
+      email: dadosFormulario.email,
+      telefone: dadosFormulario.telefone,
+      cpf_cnpj: tipoUsuario === 'Cliente' ? dadosFormulario.cpf : dadosFormulario.cnpj,
+      endereco: dadosFormulario.endereco,
+      cidade: dadosFormulario.cidade,
+      estado: dadosFormulario.estado,
+      senha: dadosFormulario.senha,
+    }
+
+    try {
+      setCarregando(true)
+      const response = await fetch('http://localhost:5000/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setMensagemErro(data.erro || 'Não foi possível criar a conta.')
+        return
+      }
+
+      router.push('/login')
+    } catch (error) {
+      setMensagemErro('Erro ao conectar com o servidor. Tente novamente mais tarde.')
+    } finally {
+      setCarregando(false)
+    }
   }
 
-  /**
-   * Função executada quando qualquer campo do formulário é alterado
-   * Atualiza o estado com o novo valor do campo modificado
-   */
+
   const aoMudar = (e) => {
     setDadosFormulario({
       ...dadosFormulario,
@@ -71,17 +97,14 @@ function ConteudoCadastro() {
     })
   }
 
-  /**
-   * Se o tipo de usuário ainda não foi selecionado,
-   * exibe a tela de seleção de perfil
-   */
+
   if (!tipoUsuario) {
     return (
       <div className="pagina-lg">
         <div className="conteudo-md">
           <h1 className="titulo-xl text-center mb-4">Escolha seu perfil</h1>
           <p className="text-center texto mb-12">Selecione o tipo de cadastro que melhor descreve você</p>
-          <div className="grid-3">
+          <div className="grid-2">
             {Object.entries(CONFIG_TIPO_USUARIO).map(([chave, config]) => {
               const Icone = config.icone
               return (
@@ -108,6 +131,9 @@ function ConteudoCadastro() {
           <p className="texto mb-8">Preencha os dados abaixo para criar sua conta</p>
 
           <form onSubmit={aoEnviar} className="space-y-6">
+            {mensagemErro && (
+              <p className="texto text-red-500 text-center">{mensagemErro}</p>
+            )}
             <CampoEntrada
               rotulo="Nome Completo"
               type="text"
@@ -135,7 +161,7 @@ function ConteudoCadastro() {
               required
             />
 
-            {tipoUsuario === 'cliente' && (
+            {tipoUsuario === 'Cliente' && (
               <CampoEntrada
                 rotulo="CPF"
                 type="text"
@@ -146,7 +172,7 @@ function ConteudoCadastro() {
               />
             )}
 
-            {tipoUsuario === 'dono' && (
+            {tipoUsuario === 'Dono' && (
               <CampoEntrada
                 rotulo="CNPJ"
                 type="text"
@@ -203,8 +229,8 @@ function ConteudoCadastro() {
               required
             />
 
-            <Botao type="submit" larguraCompleta className="flex items-center justify-center gap-2">
-              Criar Conta
+            <Botao type="submit" larguraCompleta className="flex items-center justify-center gap-2" disabled={carregando}>
+              {carregando ? 'Cadastrando...' : 'Criar Conta'}
               <ArrowRight className="w-5 h-5" />
             </Botao>
           </form>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react' // Importado para gerenciar o estado do login
 import { User, Truck, Search, Phone, Star } from 'lucide-react'
 import Link from 'next/link'
 import { Card } from '../../components/ComponentesUI'
@@ -9,9 +10,19 @@ import { Card } from '../../components/ComponentesUI'
  * Explica o processo de uso da plataforma e os diferentes perfis de usuário
  */
 export default function PaginaComoFunciona() {
+  // Estado para controlar se o usuário está logado
+  const [estaLogado, setEstaLogado] = useState(false)
+
+  // Verifica a sessão apenas quando o componente carrega no navegador
+  useEffect(() => {
+    const usuarioSessao = localStorage.getItem('user')
+    if (usuarioSessao) {
+      setEstaLogado(true)
+    }
+  }, [])
+
   /**
    * Array com os passos do processo de uso da plataforma
-   * Cada passo tem ícone, título e descrição
    */
   const passos = [
     {
@@ -37,8 +48,7 @@ export default function PaginaComoFunciona() {
   ]
 
   /**
-   * Array com informações sobre os 3 perfis de usuário disponíveis
-   * Cada perfil tem ícone, título, descrição e lista de recursos
+   * Array com informações sobre os 2 perfis de usuário disponíveis
    */
   const perfis = [
     {
@@ -109,15 +119,27 @@ export default function PaginaComoFunciona() {
           </div>
         </section>
 
-        <section className="bg-navy-500 rounded-lg p-12 text-center text-white">
-          <h2 className="titulo mb-4" style={{ color: 'white' }}>Pronto para começar?</h2>
-          <p className="text-xl mb-8 text-gray-200">
-            Cadastre-se gratuitamente e comece a usar hoje mesmo
-          </p>
-          <Link href="/cadastro" className="inline-block btn-amarelo">
-            Criar Conta Grátis
-          </Link>
-        </section>
+        {/* VERIFICAÇÃO DE LOGIN: A seção abaixo só aparece se NÃO houver usuário logado */}
+        {!estaLogado ? (
+          <section className="bg-navy-500 rounded-lg p-12 text-center text-white">
+            <h2 className="titulo mb-4" style={{ color: 'white' }}>Pronto para começar?</h2>
+            <p className="text-xl mb-8 text-gray-200">
+              Cadastre-se gratuitamente e comece a usar hoje mesmo
+            </p>
+            <Link href="/cadastro" className="inline-block btn-amarelo">
+              Criar Conta Grátis
+            </Link>
+          </section>
+        ) : (
+          /* Opcional: Mensagem para quem já está logado */
+          <section className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
+            <h2 className="titulo-2xl mb-4 text-navy-900">Você já está conectado!</h2>
+            <p className="texto mb-8">Aproveite todos os recursos da SoloObra no seu painel.</p>
+            <Link href="/busca" className="inline-block btn-amarelo">
+              Buscar Máquinas Agora
+            </Link>
+          </section>
+        )}
       </div>
     </div>
   )

@@ -1,148 +1,138 @@
-'use client'
+"use client"
+import { useState, useEffect } from 'react';
+import { MapPin, User, Star } from 'lucide-react'; // Certifique-se das importações
+// Importe seus componentes de UI (Card, Botao, etc) aqui
 
-import { useState } from 'react'
-import { MapPin, User } from 'lucide-react'
-import { MAQUINAS_EXEMPLO } from '../../../lib/dados'
-import { CampoEntrada, Card, Avaliacao } from '../../../components/ComponentesUI'
-
-/**
- * Componente da página de detalhes de uma máquina específica
- * Exibe informações completas da máquina e permite visualizar orçamento
- */
 export default function PaginaDetalhesMaquina({ params }) {
-  // Converte o ID da URL de string para número
-  const idMaquina = parseInt(params.id)
-  // Estado para armazenar a data selecionada para o serviço
-  const [dataSelecionada, setDataSelecionada] = useState('')
-  // Estado para armazenar a quantidade de horas (padrão: 1)
-  const [horas, setHoras] = useState(1)
+  const [maquina, setMaquina] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [dataSelecionada, setDataSelecionada] = useState('');
+  const [horas, setHoras] = useState(1);
 
-  // Busca a máquina pelo ID, ou usa a primeira como fallback
-  const maquina = MAQUINAS_EXEMPLO.find((m) => m.id === idMaquina) || MAQUINAS_EXEMPLO[0]
+  // 1. Busca os dados reais da API
+  useEffect(() => {
+    const buscarMaquina = async () => {
+      try {
+        setCarregando(true);
+        // Busca a máquina específica pelo ID que vem na URL
+        const resposta = await fetch(`http://localhost:5000/api/maquinas/${params.id}`);
+        const dados = await resposta.json();
+        setMaquina(dados);
+      } catch (error) {
+        console.error('Erro ao buscar máquina:', error);
+      } finally {
+        setCarregando(false);
+      }
+    };
 
-  // Cálculos do preço total (apenas para visualização)
-  const precoTotal = maquina.preco * horas // Preço base multiplicado pelas horas
-  const taxaPlataforma = precoTotal * 0.1 // Taxa de 10% da plataforma
-  const totalFinal = precoTotal + taxaPlataforma // Valor final estimado
+    buscarMaquina();
+  }, [params.id]);
+
+  // Enquanto carrega ou se não encontrar
+  if (carregando) return <div className="p-20 text-center">Carregando detalhes da máquina...</div>;
+  if (!maquina) return <div className="p-20 text-center">Máquina não encontrada.</div>;
+
+  // 2. Cálculos baseados nos nomes das colunas do seu Banco (Postgres)
+  const valorDiaria = Number(maquina.preco_diaria) || 0;
+  const precoTotal = valorDiaria * horas;
+  const taxaPlataforma = precoTotal * 0.1;
+  const totalFinal = precoTotal + taxaPlataforma;
 
   return (
     <div className="pagina">
       <div className="conteudo-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="overflow-hidden">
-              <div className="hero-sm p-12 text-center">
-                <div className="text-8xl mb-4">{maquina.imagem}</div>
+            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+              {/* Header com Imagem ou URL do Banco */}
+              <div className="hero-sm p-12 text-center bg-navy-900">
+                {maquina.img_url ? (
+                  <img src={maquina.img_url} alt={maquina.nome} className="max-h-64 mx-auto mb-4 rounded-lg" />
+                ) : (
+                  <div className="text-8xl mb-4">🚜</div>
+                )}
                 <h1 className="text-3xl font-bold text-white mb-2">{maquina.nome}</h1>
-                <div className="flex items-center justify-center gap-2 text-white">
-                  <Avaliacao nota={maquina.avaliacao} totalAvaliacoes={maquina.totalAvaliacoes} tamanho="medio" />
-                </div>
+                <p className="text-blue-200">{maquina.tipo_maquina}</p>
               </div>
+
               <div className="p-6">
-                {maquina.descricao && (
-                  <>
-                    <h2 className="titulo-sec mb-4">Descrição</h2>
-                    <p className="texto mb-6">{maquina.descricao}</p>
-                  </>
-                )}
+                <h2 className="text-xl font-bold text-navy-900 mb-4 border-b pb-2">Descrição</h2>
+                <p className="text-gray-600 mb-6">{maquina.descricao}</p>
 
-                {maquina.especificacoes && maquina.especificacoes.length > 0 && (
+                {/* Especificações (Campo JSON do Banco) */}
+                {maquina.especificacoes && (
                   <>
-                    <h2 className="titulo-sec mb-4">Especificações Técnicas</h2>
-                    <ul className="grid grid-cols-2 gap-2 mb-6">
-                      {maquina.especificacoes.map((especificacao, indice) => (
-                        <li key={indice} className="flex-gap texto">
-                          <span className="icone-ponto"></span>
-                          {especificacao}
-                        </li>
+                    <h2 className="text-xl font-bold text-navy-900 mb-4 border-b pb-2">Especificações Técnicas</h2>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      {Object.entries(maquina.especificacoes).map(([chave, valor]) => (
+                        <div key={chave} className="flex flex-col p-3 bg-gray-50 rounded">
+                          <span className="text-xs uppercase text-gray-500 font-bold">{chave}</span>
+                          <span className="text-navy-900 font-medium">{valor}</span>
+                        </div>
                       ))}
-                    </ul>
-                  </>
-                )}
-
-                {maquina.recursos && maquina.recursos.length > 0 && (
-                  <>
-                    <h2 className="titulo-sec mb-4">Recursos Inclusos</h2>
-                    <ul className="grid grid-cols-2 gap-2">
-                      {maquina.recursos.map((recurso, indice) => (
-                        <li key={indice} className="flex-gap texto">
-                          <span className="icone-ponto"></span>
-                          {recurso}
-                        </li>
-                      ))}
-                    </ul>
+                    </div>
                   </>
                 )}
               </div>
-            </Card>
+            </div>
 
-            <Card className="p-6">
-              <h2 className="titulo-sec mb-4">Sobre o Proprietário</h2>
-              <div className="flex-gap-6">
-                <div className="avatar-sm">
-                  <User className="w-8 h-8 text-white" />
+            {/* Card do Proprietário (Usando a relação que criamos no Sequelize) */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+              <h2 className="text-xl font-bold text-navy-900 mb-4">Sobre o Proprietário</h2>
+              <div className="flex items-center gap-4">
+                <div className="bg-orange-500 p-3 rounded-full">
+                  <User className="text-white w-6 h-6" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-navy-900 mb-1">{maquina.proprietario}</h3>
-                  <div className="flex-gap texto mb-2">
+                <div>
+                  <h3 className="font-bold text-lg">{maquina.proprietario?.nome || "Proprietário SoloObra"}</h3>
+                  <div className="flex items-center gap-2 text-gray-500 text-sm">
                     <MapPin className="w-4 h-4" />
-                    <span>{maquina.localizacao} • {maquina.distancia}</span>
-                  </div>
-                  <div className="mb-4">
-                    <Avaliacao nota={maquina.avaliacao} totalAvaliacoes={maquina.totalAvaliacoes} tamanho="pequeno" />
+                    <span>{maquina.localizacao}</span>
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
 
+          {/* Coluna do Orçamento (Sticky) */}
           <div className="lg:col-span-1">
-            <Card className="p-6 sticky top-24">
-              <h2 className="titulo-2xl mb-6">Orçamento</h2>
-
+            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
+              <h2 className="text-2xl font-bold text-navy-900 mb-6">Orçamento</h2>
+              
               <div className="space-y-4 mb-6">
-                <CampoEntrada
-                  rotulo="Data do Serviço"
-                  type="date"
-                  value={dataSelecionada}
-                  onChange={(e) => setDataSelecionada(e.target.value)}
-                />
-
-                <CampoEntrada
-                  rotulo="Quantidade de Horas"
-                  type="number"
-                  min="1"
-                  value={horas.toString()}
-                  onChange={(e) => setHoras(Number(e.target.value))}
-                />
+                <label className="block">
+                  <span className="text-sm font-medium text-gray-700">Quantidade de Horas</span>
+                  <input 
+                    type="number" 
+                    className="w-full mt-1 p-2 border rounded"
+                    value={horas}
+                    onChange={(e) => setHoras(Number(e.target.value))}
+                  />
+                </label>
               </div>
 
-              <div className="divisor mb-6">
-                <div className="linha mb-2">
-                  <span className="texto">Preço por hora</span>
-                  <span className="font-semibold text-navy-900">R$ {maquina.preco.toFixed(2)}</span>
+              <div className="space-y-2 border-t pt-4">
+                <div className="flex justify-between">
+                  <span>Valor das Horas</span>
+                  <span className="font-bold">R$ {precoTotal.toFixed(2)}</span>
                 </div>
-                <div className="linha mb-2">
-                  <span className="texto">Quantidade de horas</span>
-                  <span className="font-semibold text-navy-900">{horas}</span>
+                <div className="flex justify-between text-gray-500 text-sm">
+                  <span>Taxa SoloObra (10%)</span>
+                  <span>R$ {taxaPlataforma.toFixed(2)}</span>
                 </div>
-                <div className="linha mb-2">
-                  <span className="texto">Taxa da plataforma (10%)</span>
-                  <span className="font-semibold text-navy-900">R$ {taxaPlataforma.toFixed(2)}</span>
-                </div>
-                <div className="divisor pt-2 linha-total">
-                  <span className="text-lg font-bold text-navy-900">Total Estimado</span>
-                  <span className="text-lg font-bold text-navy-900">R$ {totalFinal.toFixed(2)}</span>
+                <div className="flex justify-between text-xl font-bold text-navy-900 pt-4 border-t">
+                  <span>Total</span>
+                  <span>R$ {totalFinal.toFixed(2)}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500 text-center mt-4">
-                Entre em contato com o proprietário para finalizar a contratação
-              </p>
-            </Card>
+              <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-navy-900 font-bold py-4 rounded-lg mt-6 transition-colors">
+                Reservar Agora
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
