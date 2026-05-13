@@ -1,10 +1,10 @@
 import { Sequelize } from 'sequelize';
 
 
-const sequelize = new Sequelize('SoloObraDB', 'postgres', '123', {
+const sequelize = new Sequelize('SoloObraDB', 'postgres', '8520', {
   host: 'localhost',
   dialect: 'postgres',
-  port: 5432
+  port: 5433
 });
 
 export default sequelize;

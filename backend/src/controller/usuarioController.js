@@ -61,12 +61,26 @@ export const obterUsuarioPorId = async (req, res) => {
 export const criarUsuario = async (req, res) => {
     try {
         const { tipo, nome, email, telefone, cpf_cnpj, endereco, cidade, estado, senha } = req.body;
+        
         if (!nome || !email || !senha || !tipo) {
             return res.status(400).json({ erro: 'Campos obrigatórios: tipo, nome, email e senha.' });
         }
+
+        // --- ADICIONE ESTA LINHA PARA CORRIGIR O ERRO ---
+        const tipoFormatado = tipo.toLowerCase(); 
+
         const novo = await Usuario.create({
-            tipo, nome, email, senha, telefone, cpf_cnpj, endereco, cidade, estado
+            tipo: tipoFormatado, // Use a variável formatada aqui
+            nome, 
+            email, 
+            senha, 
+            telefone, 
+            cpf_cnpj, 
+            endereco, 
+            cidade, 
+            estado
         });
+        
         res.status(201).json({ usuario: novo, mensagem: 'Usuário criado com sucesso' });
     } catch (error) {
         res.status(500).json({ erro: 'Erro no Servidor ao criar usuário', detalhes: error.message });
